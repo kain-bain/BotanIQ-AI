@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ plant.get_primary_common_name }} - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Breadcrumb -->
+    <nav style="margin-bottom: 2rem;">
+        <a href="{% url 'plants:plant_list' %}" style="color: var(--text-medium); text-decoration: none;">Plants</a>
+        <span style="color: var(--text-light); margin: 0 0.5rem;">/</span>
+        <span style="color: var(--primary-green); font-weight: 500;">{{ plant.get_primary_common_name }}</span>
+    </nav>
+
+    <!-- Plant Header -->
+    <div style="background: linear-gradient(135deg, var(--bg-secondary), var(--accent-green)); border-radius: 16px; padding: 3rem 2rem; margin-bottom: 3rem; text-align: center; color: white;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🌿</div>
+        <h1 style="font-family: var(--font-heading); font-size: 3rem; margin-bottom: 0.5rem; color: white;">
+            {{ plant.get_primary_common_name }}
+        </h1>
+        <p style="font-size: 1.5rem; opacity: 0.9; font-style: italic;">
+            {{ plant.scientific_name }}
+        </p>
+        <p style="font-size: 1.1rem; margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            {{ plant.description }}
+        </p>
+    </div>
+
+    <!-- Plant Details Grid -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+
+        <!-- Main Content -->
+        <div>
+
+            <!-- Basic Information -->
+            <section class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h2 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1.5rem;">
+                        Botanical Information
+                    </h2>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div>
+                            <h3 style="color: var(--secondary-green); margin-bottom: 0.5rem;">Plant Family</h3>
+                            <p>{{ plant.plant_family }}</p>
+                        </div>
+
+                        <div>
+                            <h3 style="color: var(--secondary-green); margin-bottom: 0.5rem;">Habitat</h3>
+                            <p>{{ plant.habitat|default:"Various regions" }}</p>
+                        </div>
+
+                        {% if plant.regions %}
+                        <div style="grid-column: 1 / -1;">
+                            <h3 style="color: var(--secondary-green); margin-bottom: 0.5rem;">Geographical Regions</h3>
+                            <div>
+                                {% for region in plant.regions %}
+                                <span style="display: inline-block; background: var(--bg-accent); color: var(--secondary-green); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">
+                                    {{ region }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Traditional Knowledge -->
+            <section class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h2 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1.5rem;">
+                        Traditional Knowledge
+                    </h2>
+
+                    {% if plant.traditional_systems %}
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Traditional Medicine Systems</h3>
+                        <div>
+                            {% for system in plant.traditional_systems %}
+                            <span style="display: inline-block; background: var(--primary-green); color: white; padding: 0.5rem 1rem; border-radius: 25px; font-size: 0.9rem; margin-right: 0.75rem; margin-bottom: 0.5rem; font-weight: 500;">
+                                {{ system }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.cultural_uses %}
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Cultural & Historical Uses</h3>
+                        <ul style="padding-left: 1.5rem;">
+                            {% for use in plant.cultural_uses %}
+                            <li style="margin-bottom: 0.5rem; line-height: 1.6;">{{ use }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.parts_used %}
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Plant Parts Used</h3>
+                        <div>
+                            {% for part in plant.parts_used %}
+                            <span style="display: inline-block; background: var(--bg-secondary); color: var(--text-dark); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-right: 0.75rem; margin-bottom: 0.5rem;">
+                                {{ part }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.preparations %}
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Traditional Preparations</h3>
+                        <ul style="padding-left: 1.5rem;">
+                            {% for prep in plant.preparations %}
+                            <li style="margin-bottom: 0.5rem; line-height: 1.6;">{{ prep }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.dosage_info %}
+                    <div>
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Traditional Dosage Information</h3>
+                        <div style="background: var(--bg-accent); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-green);">
+                            <p style="margin: 0; font-style: italic;">{{ plant.dosage_info }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Scientific Research -->
+            {% if plant.active_compounds or plant.research_studies or plant.pharmacological_actions %}
+            <section class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h2 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1.5rem;">
+                        Scientific Research
+                    </h2>
+
+                    {% if plant.active_compounds %}
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Active Compounds</h3>
+                        <div>
+                            {% for compound in plant.active_compounds %}
+                            <span style="display: inline-block; background: var(--accent-green); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; margin-right: 0.75rem; margin-bottom: 0.5rem; font-weight: 500;">
+                                {{ compound }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.pharmacological_actions %}
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Pharmacological Actions</h3>
+                        <div>
+                            {% for action in plant.pharmacological_actions %}
+                            <span style="display: inline-block; background: var(--bg-secondary); color: var(--text-dark); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-right: 0.75rem; margin-bottom: 0.5rem;">
+                                {{ action }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.research_studies %}
+                    <div>
+                        <h3 style="color: var(--secondary-green); margin-bottom: 1rem;">Research Studies</h3>
+                        <ul style="padding-left: 1.5rem;">
+                            {% for study in plant.research_studies %}
+                            <li style="margin-bottom: 0.75rem; line-height: 1.6;">{{ study }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+            {% endif %}
+
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+
+            <!-- Safety Information -->
+            {% if plant.safety_warnings or plant.contraindications or plant.interactions or plant.toxicity_info %}
+            <section class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h3 style="color: var(--warning); margin-bottom: 1rem; display: flex; align-items: center;">
+                        ⚠️ Safety Information
+                    </h3>
+
+                    {% if plant.safety_warnings %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong style="color: var(--error);">Warnings:</strong>
+                        <p style="margin-top: 0.5rem; color: var(--text-medium);">{{ plant.safety_warnings }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.contraindications %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong style="color: var(--error);">Contraindications:</strong>
+                        <p style="margin-top: 0.5rem; color: var(--text-medium);">{{ plant.contraindications }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.interactions %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong style="color: var(--error);">Interactions:</strong>
+                        <p style="margin-top: 0.5rem; color: var(--text-medium);">{{ plant.interactions }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.toxicity_info %}
+                    <div>
+                        <strong style="color: var(--error);">Toxicity:</strong>
+                        <p style="margin-top: 0.5rem; color: var(--text-medium);">{{ plant.toxicity_info }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Conservation -->
+            {% if plant.conservation_status or plant.sustainability_info or plant.ethical_sourcing %}
+            <section class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h3 style="color: var(--success); margin-bottom: 1rem; display: flex; align-items: center;">
+                        🌱 Conservation & Sustainability
+                    </h3>
+
+                    {% if plant.conservation_status %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Status:</strong>
+                        <span class="{% if plant.conservation_status == 'Endangered' %}status-endangered{% else %}status-safe{% endif %}" style="color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                            {{ plant.conservation_status }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    {% if plant.sustainability_info %}
+                    <p style="margin-bottom: 1rem; color: var(--text-medium);">{{ plant.sustainability_info }}</p>
+                    {% endif %}
+
+                    {% if plant.ethical_sourcing %}
+                    <p style="color: var(--text-medium);">{{ plant.ethical_sourcing }}</p>
+                    {% endif %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Navigation -->
+            <section class="card">
+                <div class="card-content">
+                    <h3 style="color: var(--primary-green); margin-bottom: 1rem;">Explore More</h3>
+                    <a href="{% url 'plants:plant_list' %}" class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">All Plants</a>
+                    <a href="{% url 'home' %}" class="btn btn-secondary" style="width: 100%;">Home</a>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- Disclaimer -->
+    <div style="background: var(--warning); color: var(--text-dark); padding: 2rem; border-radius: 12px; text-align: center;">
+        <h3 style="margin-bottom: 1rem;">⚕️ Medical Disclaimer</h3>
+        <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+            The information provided on BotanIQ is for educational and research purposes only.
+            It is not intended to diagnose, treat, cure, or prevent any disease. Always consult with qualified healthcare professionals
+            before using any plant-based remedies or supplements.
+        </p>
+    </div>
+</div>
+{% endblock %}

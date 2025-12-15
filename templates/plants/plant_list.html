@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Medicinal Plants - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Hero Section -->
+    <section class="hero" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-family: var(--font-heading); font-size: 3rem; color: var(--primary-green); margin-bottom: 1rem;">
+            Discover Medicinal Plants
+        </h1>
+        <p style="font-size: 1.2rem; color: var(--text-medium); max-width: 600px; margin: 0 auto 2rem;">
+            Explore our comprehensive database of medicinal plants used in traditional medicine systems worldwide.
+            Learn about their historical uses, scientific research, and cultural significance.
+        </p>
+
+        <!-- Search Form -->
+        <form method="get" style="max-width: 500px; margin: 0 auto;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Search plants by name..."
+                    style="flex: 1; padding: 0.75rem; border: 2px solid var(--bg-secondary); border-radius: 8px; font-size: 1rem;"
+                >
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                    Search
+                </button>
+            </div>
+        </form>
+
+        {% if query %}
+        <p style="margin-top: 1rem; color: var(--text-medium);">
+            {% if plants %}
+                Found {{ plants|length }} plant{{ plants|pluralize }} matching "{{ query }}"
+            {% else %}
+                No plants found matching "{{ query }}"
+            {% endif %}
+        </p>
+        {% endif %}
+    </section>
+
+    <!-- Plants Grid -->
+    {% if plants %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+        {% for plant in plants %}
+        <div class="card">
+            {% if plant.image_url %}
+            <div style="height: 200px; background: linear-gradient(45deg, var(--bg-accent), var(--accent-green)); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                🌿
+            </div>
+            {% else %}
+            <div style="height: 200px; background: linear-gradient(45deg, var(--bg-accent), var(--accent-green)); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                🌱
+            </div>
+            {% endif %}
+
+            <div class="card-content">
+                <h3 class="card-title">{{ plant.get_primary_common_name }}</h3>
+                <p class="card-subtitle"><em>{{ plant.scientific_name }}</em></p>
+                <p style="color: var(--text-medium); margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ plant.description|truncatechars:150 }}
+                </p>
+
+                {% if plant.traditional_systems %}
+                <div style="margin-bottom: 1rem;">
+                    <strong style="font-size: 0.9rem; color: var(--text-medium);">Traditional Systems:</strong>
+                    <div style="margin-top: 0.25rem;">
+                        {% for system in plant.traditional_systems %}
+                        <span style="display: inline-block; background: var(--bg-accent); color: var(--secondary-green); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.25rem;">
+                            {{ system }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <a href="{% url 'plants:plant_detail' plant.scientific_name %}" class="btn btn-primary" style="width: 100%; text-align: center;">
+                    Learn More
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Stats -->
+    <div style="text-align: center; padding: 2rem; background: var(--bg-secondary); border-radius: 12px;">
+        <h3 style="color: var(--primary-green); margin-bottom: 0.5rem;">Database Statistics</h3>
+        <p style="font-size: 1.1rem; color: var(--text-medium);">
+            Currently featuring <strong>{{ total_plants }}</strong> verified medicinal plants
+        </p>
+    </div>
+
+    {% else %}
+    <div style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🌿</div>
+        <h2 style="color: var(--primary-green); margin-bottom: 1rem;">No Plants Found</h2>
+        <p style="color: var(--text-medium); margin-bottom: 2rem;">
+            {% if query %}
+                Try adjusting your search terms or browse all plants.
+            {% else %}
+                Our database is currently being populated with medicinal plants.
+            {% endif %}
+        </p>
+        {% if query %}
+        <a href="{% url 'plants:plant_list' %}" class="btn btn-secondary">View All Plants</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
