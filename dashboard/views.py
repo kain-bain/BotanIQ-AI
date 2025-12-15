@@ -107,3 +107,69 @@ def toggle_favorite(request, plant_id):
     saved_plant.is_favorite = not saved_plant.is_favorite
     saved_plant.save()
     return redirect('dashboard:dashboard')
+
+
+# Admin Dashboard Views
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
+from .forms import PlantForm
+
+@staff_member_required
+def admin_dashboard(request):
+    """Admin dashboard for content management"""
+    # Statistics
+    total_plants = Plant.objects.count()
+    verified_plants = Plant.objects.filter(is_verified=True).count()
+    total_users = User.objects.count()
+    active_users = User.objects.filter(is_active=True).count()
+    total_saved_plants = SavedPlant.objects.count()
+
+    context = {
+        'total_plants': total_plants,
+        'verified_plants': verified_plants,
+        'total_users': total_users,
+        'active_users': active_users,
+        'total_saved_plants': total_saved_plants,
+        'recent_plants': Plant.objects.order_by('-created_at')[:5],
+        'recent_users': User.objects.order_by('-date_joined')[:5],
+    }
+    return render(request, 'dashboard/admin_dashboard.html', context)
+
+@staff_member_required
+def admin_plants(request):
+    """Manage plants in admin dashboard"""
+    plants = Plant.objects.all().order_by('-created_at')
+    return render(request, 'dashboard/admin_plants.html', {'plants': plants})
+
+@staff_member_required
+def admin_add_plant(request):
+    """Add new plant via admin dashboard"""
+    if request.method == 'POST':
+        form = PlantForm(request.POST)
+        if form.is_valid():
+            plant = form.save()
+            messages.success(request, f'Plant "{plant.get_primary_common_name()}" added successfully!')
+            return redirect('dashboard:admin_plants')
+    else:
+        form = PlantForm()
+    return render(request, 'dashboard/admin_add_plant.html', {'form': form})
+
+@staff_member_required
+def admin_edit_plant(request, plant_id):
+    """Edit plant via admin dashboard"""
+    plant = get_object_or_404(Plant, id=plant_id)
+    if request.method == 'POST':
+        form = PlantForm(request.POST, instance=plant)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Plant "{plant.get_primary_common_name()}" updated successfully!')
+            return redirect('dashboard:admin_plants')
+    else:
+        form = PlantForm(instance=plant)
+    return render(request, 'dashboard/admin_edit_plant.html', {'form': form, 'plant': plant})
+
+@staff_member_required
+def admin_users(request):
+    """Manage users in admin dashboard"""
+    users = User.objects.all().order_by('-date_joined')
+    return render(request, 'dashboard/admin_users.html', {'users': users})

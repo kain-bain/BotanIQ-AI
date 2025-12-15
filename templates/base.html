@@ -95,6 +95,15 @@
             opacity: 0.8;
         }
 
+        .admin-badge {
+            background: var(--error);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+        }
+
         .user-nav {
             margin-left: auto;
             display: flex;
@@ -233,13 +242,13 @@
             <nav class="nav">
                 <a href="{% url 'plants:plant_list' %}">Plants</a>
                 {% if user.is_staff %}
-                <a href="{% url 'admin:index' %}">Admin</a>
+                <a href="{% url 'dashboard:admin_dashboard' %}">Admin<span class="admin-badge">Dashboard</span></a>
                 {% endif %}
             </nav>
             <div class="user-nav">
                 {% if user.is_authenticated %}
                     <span style="color: white; font-weight: 500;">Welcome, {{ user.username }}!</span>
-                    <a href="#" class="btn" style="background: var(--accent-green); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Dashboard</a>
+                    <a href="{% url 'dashboard:dashboard' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Dashboard</a>
                     <a href="{% url 'logout' %}" class="btn" style="background: transparent; border: 1px solid white; color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Logout</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Login</a>
