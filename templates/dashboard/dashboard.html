@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}My Research Dashboard - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1rem;">
+            My Research Dashboard
+        </h1>
+        <p style="color: var(--text-medium); font-size: 1.1rem;">
+            Welcome back, {{ user.username }}! Manage your botanical research library.
+        </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="card" style="text-align: center;">
+            <div class="card-content">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
+                <h3 style="font-size: 2rem; color: var(--primary-green); margin-bottom: 0.5rem;">{{ total_saved }}</h3>
+                <p style="color: var(--text-medium);">Plants Saved</p>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <div class="card-content">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
+                <h3 style="font-size: 2rem; color: var(--primary-green); margin-bottom: 0.5rem;">{{ total_collections }}</h3>
+                <p style="color: var(--text-medium);">Collections</p>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <div class="card-content">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📝</div>
+                <h3 style="font-size: 2rem; color: var(--primary-green); margin-bottom: 0.5rem;">{{ total_notes }}</h3>
+                <p style="color: var(--text-medium);">Research Notes</p>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <div class="card-content">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⭐</div>
+                <h3 style="font-size: 2rem; color: var(--primary-green); margin-bottom: 0.5rem;">{{ favorite_plants|length }}</h3>
+                <p style="color: var(--text-medium);">Favorites</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collections Section -->
+    <section style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 style="font-family: var(--font-heading); color: var(--primary-green);">My Collections</h2>
+            <a href="#" class="btn btn-secondary">Create Collection</a>
+        </div>
+
+        {% if collections %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+            {% for collection in collections %}
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">
+                        {{ collection.name }}
+                        {% if collection.is_default %}<span style="font-size: 0.8rem; color: var(--accent-green);">(Default)</span>{% endif %}
+                    </h3>
+                    <p class="card-subtitle">{{ collection.plant_count }} plants</p>
+                    {% if collection.description %}
+                    <p style="color: var(--text-medium); margin-bottom: 1rem;">{{ collection.description }}</p>
+                    {% endif %}
+                    <a href="{% url 'dashboard:collection_detail' collection.id %}" class="btn btn-primary" style="width: 100%;">
+                        View Collection
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem; background: var(--bg-secondary); border-radius: 12px;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+            <h3 style="color: var(--primary-green); margin-bottom: 1rem;">No Collections Yet</h3>
+            <p style="color: var(--text-medium); margin-bottom: 2rem;">
+                Start organizing your research by creating collections for different study topics.
+            </p>
+            <a href="#" class="btn btn-secondary">Create Your First Collection</a>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Recent Plants -->
+    {% if recent_plants %}
+    <section style="margin-bottom: 3rem;">
+        <h2 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 2rem;">Recently Added</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+            {% for saved_plant in recent_plants %}
+            <div class="card">
+                <div style="height: 150px; background: linear-gradient(45deg, var(--bg-accent), var(--accent-green)); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                    🌿
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">{{ saved_plant.plant.get_primary_common_name }}</h3>
+                    <p class="card-subtitle"><em>{{ saved_plant.plant.scientific_name }}</em></p>
+                    <p style="color: var(--text-medium); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Added {{ saved_plant.date_saved|date:"M j, Y" }}
+                    </p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="{% url 'plants:plant_detail' saved_plant.plant.scientific_name %}" class="btn btn-primary" style="flex: 1; font-size: 0.9rem;">
+                            View
+                        </a>
+                        <a href="{% url 'dashboard:toggle_favorite' saved_plant.plant.id %}" class="btn btn-secondary" style="font-size: 0.9rem;">
+                            {% if saved_plant.is_favorite %}⭐{% else %}☆{% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Favorites -->
+    {% if favorite_plants %}
+    <section style="margin-bottom: 3rem;">
+        <h2 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 2rem;">⭐ My Favorites</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+            {% for saved_plant in favorite_plants %}
+            <div class="card" style="text-align: center;">
+                <div style="height: 100px; background: linear-gradient(45deg, var(--bg-accent), var(--accent-green)); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                    🌿
+                </div>
+                <div class="card-content">
+                    <h4 style="color: var(--primary-green); margin-bottom: 0.5rem; font-size: 1rem;">
+                        {{ saved_plant.plant.get_primary_common_name }}
+                    </h4>
+                    <a href="{% url 'plants:plant_detail' saved_plant.plant.scientific_name %}" class="btn btn-primary" style="width: 100%; font-size: 0.9rem;">
+                        View
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <section style="background: var(--primary-green); color: white; border-radius: 16px; padding: 3rem 2rem; text-align: center;">
+        <h2 style="font-family: var(--font-heading); margin-bottom: 1rem;">Continue Your Research</h2>
+        <p style="margin-bottom: 2rem; opacity: 0.9;">
+            Explore more plants and expand your botanical knowledge.
+        </p>
+        <a href="{% url 'plants:plant_list' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 1.1rem; padding: 1rem 2rem;">
+            Browse Plants
+        </a>
+    </section>
+</div>
+{% endblock %}

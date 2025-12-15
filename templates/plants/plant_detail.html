@@ -264,6 +264,24 @@
 
     </div>
 
+    <!-- Actions -->
+    {% if user.is_authenticated %}
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <a href="{% url 'dashboard:save_plant' plant.id %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+            💾 Save to My Research Library
+        </a>
+    </div>
+    {% else %}
+    <div style="text-align: center; margin-bottom: 3rem; padding: 2rem; background: var(--bg-accent); border-radius: 12px;">
+        <p style="color: var(--text-medium); margin-bottom: 1rem;">
+            Want to save this plant to your research library?
+        </p>
+        <a href="{% url 'register' %}" class="btn btn-primary">Create Account</a>
+        <span style="color: var(--text-medium); margin: 0 1rem;">or</span>
+        <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
+    </div>
+    {% endif %}
+
     <!-- Disclaimer -->
     <div style="background: var(--warning); color: var(--text-dark); padding: 2rem; border-radius: 12px; text-align: center;">
         <h3 style="margin-bottom: 1rem;">⚕️ Medical Disclaimer</h3>
