@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="max-width: 500px; margin: 4rem auto;">
+    <div class="card">
+        <div class="card-content">
+            <h1 style="text-align: center; font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 2rem;">
+                Welcome Back
+            </h1>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div style="background: var(--error); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        {% for error in form.non_field_errors %}
+                            <p style="margin: 0;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="{{ form.username.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                        Username
+                    </label>
+                    <input
+                        type="text"
+                        name="{{ form.username.name }}"
+                        id="{{ form.username.id_for_label }}"
+                        value="{{ form.username.value|default:'' }}"
+                        required
+                        style="width: 100%; padding: 0.75rem; border: 2px solid var(--bg-secondary); border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;"
+                        onfocus="this.style.borderColor = 'var(--accent-green)'"
+                        onblur="this.style.borderColor = 'var(--bg-secondary)'"
+                    >
+                    {% if form.username.errors %}
+                        <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                            {{ form.username.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label for="{{ form.password.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        name="{{ form.password.name }}"
+                        id="{{ form.password.id_for_label }}"
+                        required
+                        style="width: 100%; padding: 0.75rem; border: 2px solid var(--bg-secondary); border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;"
+                        onfocus="this.style.borderColor = 'var(--accent-green)'"
+                        onblur="this.style.borderColor = 'var(--bg-secondary)'"
+                    >
+                    {% if form.password.errors %}
+                        <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                            {{ form.password.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">
+                    Sign In
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--bg-secondary);">
+                <p style="color: var(--text-medium); margin-bottom: 1rem;">
+                    Don't have an account?
+                </p>
+                <a href="{% url 'register' %}" class="btn btn-secondary" style="width: 100%;">
+                    Create Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

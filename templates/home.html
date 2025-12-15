@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Hero Section -->
+    <section style="text-align: center; margin-bottom: 4rem;">
+        <div style="background: linear-gradient(135deg, var(--bg-secondary), var(--accent-green)); border-radius: 20px; padding: 4rem 2rem; margin-bottom: 3rem;">
+            <div style="font-size: 5rem; margin-bottom: 1rem;">🌿</div>
+            <h1 style="font-family: var(--font-heading); font-size: 4rem; color: var(--primary-green); margin-bottom: 1rem;">
+                Discover the Botanical Intelligence of Traditional Medicine
+            </h1>
+            <p style="font-size: 1.4rem; color: var(--text-medium); max-width: 700px; margin: 0 auto 2rem;">
+                Explore our comprehensive database of medicinal plants from traditional medicine systems worldwide.
+                Learn, research, and discover the wisdom of botanical healing traditions.
+            </p>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'plants:plant_list' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                    Explore Plants
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="#" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        My Research Library
+                    </a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        Join BotanIQ
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section style="margin-bottom: 4rem;">
+        <h2 style="text-align: center; font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 3rem;">
+            Why Choose BotanIQ?
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔬</div>
+                    <h3 class="card-title">Scientific Research</h3>
+                    <p>Access verified scientific studies and pharmacological data for each plant.</p>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌍</div>
+                    <h3 class="card-title">Global Traditions</h3>
+                    <p>Explore medicinal plants from Ayurveda, TCM, Western Herbalism, and more.</p>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+                    <h3 class="card-title">AI-Powered Search</h3>
+                    <p>Find plants by traditional uses with intelligent search and discovery.</p>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                    <h3 class="card-title">Research Library</h3>
+                    <p>Save plants to your personal research collection and track your studies.</p>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+                    <h3 class="card-title">Safety First</h3>
+                    <p>Comprehensive safety information and contraindications for responsible use.</p>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                    <h3 class="card-title">Conservation Focus</h3>
+                    <p>Learn about plant conservation and ethical sourcing practices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="background: var(--primary-green); color: white; border-radius: 16px; padding: 3rem 2rem; text-align: center;">
+        <h2 style="font-family: var(--font-heading); margin-bottom: 1rem;">
+            Start Your Botanical Journey Today
+        </h2>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
+            Join thousands of researchers, herbalists, and students exploring the world of medicinal plants.
+        </p>
+        <a href="{% url 'plants:plant_list' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 1.1rem; padding: 1rem 2rem;">
+            Begin Exploring
+        </a>
+    </section>
+</div>
+{% endblock %}
