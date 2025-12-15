@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="text-align: center; padding: 4rem 2rem;">
+    <div style="font-size: 6rem; margin-bottom: 1rem;">🌿</div>
+    <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1rem;">
+        Plant Not Found
+    </h1>
+    <p style="color: var(--text-medium); font-size: 1.2rem; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+        The page you're looking for seems to have wandered off into the botanical wilderness.
+    </p>
+    <div>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-right: 1rem;">Return Home</a>
+        <a href="{% url 'plants:plant_list' %}" class="btn btn-secondary">Browse Plants</a>
+    </div>
+</div>
+{% endblock %}
