@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1rem;">
+            Manage Users
+        </h1>
+        <p style="color: var(--text-medium);">
+            View and manage BotanIQ user accounts.
+        </p>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+        <div class="card-content">
+            {% if users %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--bg-secondary);">
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--primary-green);">Username</th>
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--primary-green);">Email</th>
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--primary-green);">Status</th>
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--primary-green);">Joined</th>
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--primary-green);">Staff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr style="border-bottom: 1px solid var(--bg-secondary);">
+                                <td style="padding: 1rem;">
+                                    <strong>{{ user.username }}</strong>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    {{ user.email|default:"No email" }}
+                                </td>
+                                <td style="padding: 1rem;">
+                                    {% if user.is_active %}
+                                        <span style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                            Active
+                                        </span>
+                                    {% else %}
+                                        <span style="background: var(--error); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                            Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 1rem;">
+                                    {{ user.date_joined|date:"M j, Y" }}
+                                </td>
+                                <td style="padding: 1rem;">
+                                    {% if user.is_staff %}
+                                        <span style="background: var(--primary-green); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                            Staff
+                                        </span>
+                                    {% else %}
+                                        <span style="background: var(--text-medium); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                            User
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">👥</div>
+                    <h3 style="color: var(--primary-green); margin-bottom: 1rem;">No Users Yet</h3>
+                    <p style="color: var(--text-medium); margin-bottom: 2rem;">
+                        User accounts will appear here once people start registering.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="{% url 'dashboard:admin_dashboard' %}" class="btn btn-secondary">
+            ← Back to Admin Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

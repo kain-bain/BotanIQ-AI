@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Settings - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <a href="{% url 'dashboard:dashboard' %}" style="color: var(--text-medium); text-decoration: none;">← Back to Dashboard</a>
+        </div>
+        <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1rem;">
+            Account Settings
+        </h1>
+        <p style="color: var(--text-medium); font-size: 1.1rem;">
+            Manage your profile information and account preferences.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 3rem;">
+        <!-- Settings Navigation -->
+        <div class="card">
+            <div class="card-content">
+                <h3 style="color: var(--primary-green); margin-bottom: 1rem;">Settings</h3>
+                <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="#profile" class="btn btn-secondary" style="justify-content: flex-start;">Profile Information</a>
+                    <a href="#account" class="btn btn-secondary" style="justify-content: flex-start;">Account Details</a>
+                    <a href="#security" class="btn btn-secondary" style="justify-content: flex-start;">Security</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div>
+            <!-- Profile Information -->
+            <div id="profile" class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">Profile Information</h3>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div style="background: var(--success); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.email.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                Email Address
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    {{ form.email.errors.0 }}
+                                </p>
+                            {% endif %}
+                            {% if not profile.email_verified %}
+                                <div style="background: var(--warning); color: white; padding: 0.75rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.9rem;">
+                                    <strong>Email not verified</strong> - Check your inbox for a verification link, or
+                                    <a href="#" style="color: white; text-decoration: underline;">resend verification email</a>
+                                </div>
+                            {% else %}
+                                <small style="color: var(--success); display: block; margin-top: 0.5rem;">
+                                    ✓ Email verified
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.phone_number.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                Phone Number
+                            </label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    {{ form.phone_number.errors.0 }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.location.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                Location
+                            </label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    {{ form.location.errors.0 }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <label for="{{ form.bio.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                Bio (Optional)
+                            </label>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                                <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    {{ form.bio.errors.0 }}
+                                </p>
+                            {% endif %}
+                            <small style="color: var(--text-medium); display: block; margin-top: 0.5rem;">
+                                Tell others about your interest in medicinal plants
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">
+                            Save Profile Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Details -->
+            <div id="account" class="card" style="margin-bottom: 2rem;">
+                <div class="card-content">
+                    <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">Account Details</h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="font-weight: 500; color: var(--text-dark);">Username</label>
+                            <p style="color: var(--text-medium); margin-top: 0.5rem;">{{ user.username }}</p>
+                        </div>
+                        <div>
+                            <label style="font-weight: 500; color: var(--text-dark);">Member Since</label>
+                            <p style="color: var(--text-medium); margin-top: 0.5rem;">{{ user.date_joined|date:"M j, Y" }}</p>
+                        </div>
+                        <div>
+                            <label style="font-weight: 500; color: var(--text-dark);">Account Status</label>
+                            <p style="color: var(--text-medium); margin-top: 0.5rem;">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <label style="font-weight: 500; color: var(--text-dark);">Account Type</label>
+                            <p style="color: var(--text-medium); margin-top: 0.5rem;">
+                                {% if user.is_staff %}Administrator{% else %}Researcher{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div id="security" class="card">
+                <div class="card-content">
+                    <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">Security & Privacy</h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                        <a href="#" class="btn btn-secondary">Change Password</a>
+                        <a href="#" class="btn btn-secondary">Download My Data</a>
+                        <a href="#" class="btn btn-secondary">Privacy Settings</a>
+                        <a href="#" class="btn btn-secondary" style="background: var(--error); color: white;">Delete Account</a>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary-green); margin-bottom: 0.5rem;">Last Login</h4>
+                        <p style="color: var(--text-medium); margin: 0;">
+                            {{ user.last_login|date:"M j, Y \a\t g:i A" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Style form inputs
+    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], textarea');
+    inputs.forEach(input => {
+        input.style.width = '100%';
+        input.style.padding = '0.75rem';
+        input.style.border = '2px solid var(--bg-secondary)';
+        input.style.borderRadius = '8px';
+        input.style.fontSize = '1rem';
+        input.style.marginTop = '0.25rem';
+
+        input.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--accent-green)';
+        });
+
+        input.addEventListener('blur', function() {
+            this.style.borderColor = 'var(--bg-secondary)';
+        });
+    });
+});
+</script>
+{% endblock %}

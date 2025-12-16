@@ -107,22 +107,34 @@ botaniq/
 ## Deployment
 
 ### Railway (Recommended)
-1. Connect GitHub repository
-2. Add environment variables
+1. Connect GitHub repository to Railway
+2. Add environment variables in Railway dashboard:
+   ```
+   SECRET_KEY=your-generated-secret-key
+   DEBUG=False
+   ALLOWED_HOSTS=your-railway-domain.up.railway.app
+   DATABASE_ENGINE=django.db.backends.postgresql
+   DATABASE_NAME=railway
+   DATABASE_USER=postgres
+   DATABASE_PASSWORD=your-db-password
+   DATABASE_HOST=your-db-host
+   DATABASE_PORT=5432
+   MISTRAL_API_KEY=your-mistral-api-key (optional)
+   ```
 3. Deploy automatically
 
-### Manual Deployment
+### Local Production Testing
 ```bash
-# Set environment variables
-export DEBUG=False
-export SECRET_KEY=your-secret-key
-export ALLOWED_HOSTS=your-domain.com
+# Copy environment template
+cp .env.example .env
 
-# Collect static files
+# Edit .env with your values
+# Set DEBUG=False for production testing
+
+# Run with production settings
 python manage.py collectstatic
-
-# Run migrations
 python manage.py migrate
+python manage.py runserver
 ```
 
 ## Medical Disclaimer

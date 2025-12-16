@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-y%x*3ik+&ug1&8r@6*s9##%eobtvsl#h8=g-gek!gf9ehih$%c"
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True
@@ -84,8 +85,15 @@ WSGI_APPLICATION = "botaniq.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
+        "NAME": os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get('DATABASE_USER', ''),
+        "PASSWORD": os.environ.get('DATABASE_PASSWORD', ''),
+        "HOST": os.environ.get('DATABASE_HOST', ''),
+        "PORT": os.environ.get('DATABASE_PORT', ''),
+        "OPTIONS": {} if os.environ.get('DATABASE_ENGINE') != 'django.db.backends.postgresql' else {
+            'sslmode': 'require',
+        },
     }
 }
 
@@ -125,8 +133,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Authentication redirects
+LOGIN_REDIRECT_URL = 'dashboard:dashboard'
+LOGOUT_REDIRECT_URL = 'home'

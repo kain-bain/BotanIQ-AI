@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Plant - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="max-width: 800px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1rem;">
+            Edit Plant
+        </h1>
+        <p style="color: var(--text-medium);">
+            Update information for <em>{{ plant.get_primary_common_name }}</em> ({{ plant.scientific_name }}).
+        </p>
+    </div>
+
+    <!-- Form -->
+    <div class="card">
+        <div class="card-content">
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div style="background: var(--error); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                        {% for error in form.non_field_errors %}
+                            <p style="margin: 0;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+                    <!-- Left Column -->
+                    <div>
+
+                        <!-- Basic Information -->
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="color: var(--primary-green); margin-bottom: 1rem;">Basic Information</h3>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="{{ form.scientific_name.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Scientific Name *
+                                </label>
+                                {{ form.scientific_name }}
+                                {% if form.scientific_name.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.scientific_name.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="{{ form.common_names.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Common Names
+                                </label>
+                                {{ form.common_names }}
+                                {% if form.common_names.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.common_names.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="{{ form.plant_family.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Plant Family
+                                </label>
+                                {{ form.plant_family }}
+                                {% if form.plant_family.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.plant_family.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="color: var(--primary-green); margin-bottom: 1rem;">Description</h3>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="{{ form.description.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Description *
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.description.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column -->
+                    <div>
+
+                        <!-- Additional Information -->
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="color: var(--primary-green); margin-bottom: 1rem;">Additional Information</h3>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="{{ form.habitat.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Habitat
+                                </label>
+                                {{ form.habitat }}
+                                {% if form.habitat.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.habitat.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="{{ form.regions.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Regions
+                                </label>
+                                {{ form.regions }}
+                                {% if form.regions.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.regions.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                {{ form.is_verified }}
+                                <label for="{{ form.is_verified.id_for_label }}" style="margin-left: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                                    Verified (Published)
+                                </label>
+                                {% if form.is_verified.errors %}
+                                    <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                                        {{ form.is_verified.errors.0 }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--bg-secondary);">
+                    <button type="submit" class="btn btn-primary" style="margin-right: 1rem;">
+                        Update Plant
+                    </button>
+                    <a href="{% url 'dashboard:admin_plants' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Style the form inputs to match our design
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input[type="text"], textarea, select');
+    inputs.forEach(input => {
+        input.style.width = '100%';
+        input.style.padding = '0.75rem';
+        input.style.border = '2px solid var(--bg-secondary)';
+        input.style.borderRadius = '8px';
+        input.style.fontSize = '1rem';
+        input.style.fontFamily = 'inherit';
+        input.style.transition = 'border-color 0.3s';
+
+        input.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--accent-green)';
+        });
+
+        input.addEventListener('blur', function() {
+            this.style.borderColor = 'var(--bg-secondary)';
+        });
+    });
+
+    // Style checkboxes
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.style.width = 'auto';
+        checkbox.style.marginRight = '0.5rem';
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

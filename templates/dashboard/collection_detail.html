@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ collection.name }} - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <!-- Header -->
+    <div style="margin-bottom: 3rem;">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <a href="{% url 'dashboard:dashboard' %}" style="color: var(--text-medium); text-decoration: none;">← Back to Dashboard</a>
+        </div>
+        <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 0.5rem;">
+            {{ collection.name }}
+            {% if collection.is_default %}<span style="font-size: 0.8rem; color: var(--accent-green);">(Default Collection)</span>{% endif %}
+        </h1>
+        {% if collection.description %}
+        <p style="color: var(--text-medium); font-size: 1.1rem;">{{ collection.description }}</p>
+        {% endif %}
+        <p style="color: var(--text-medium); margin-top: 0.5rem;">{{ saved_plants|length }} plants in this collection</p>
+    </div>
+
+    <!-- Plants in Collection -->
+    {% if saved_plants %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for saved_plant in saved_plants %}
+        <div class="card">
+            <div style="height: 150px; background: linear-gradient(45deg, var(--bg-accent), var(--accent-green)); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                🌿
+            </div>
+            <div class="card-content">
+                <h3 class="card-title">{{ saved_plant.plant.get_primary_common_name }}</h3>
+                <p class="card-subtitle"><em>{{ saved_plant.plant.scientific_name }}</em></p>
+                <p style="color: var(--text-medium); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Added {{ saved_plant.date_saved|date:"M j, Y" }}
+                    {% if saved_plant.is_favorite %} • ⭐ Favorite{% endif %}
+                </p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="{% url 'plants:plant_detail' saved_plant.plant.scientific_name %}" class="btn btn-primary" style="flex: 1; font-size: 0.9rem;">
+                        View Details
+                    </a>
+                    <form method="post" action="{% url 'dashboard:toggle_favorite' saved_plant.plant.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary" style="font-size: 0.9rem;">
+                            {% if saved_plant.is_favorite %}⭐{% else %}☆{% endif %}
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'dashboard:remove_plant' saved_plant.plant.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary" style="font-size: 0.9rem; background: var(--error); color: white;" onclick="return confirm('Remove this plant from the collection?')">
+                            🗑️
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: var(--bg-secondary); border-radius: 12px;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+        <h3 style="color: var(--primary-green); margin-bottom: 1rem;">No Plants in This Collection</h3>
+        <p style="color: var(--text-medium); margin-bottom: 2rem;">
+            This collection is empty. Start adding plants to organize your research.
+        </p>
+        <a href="{% url 'plants:plant_list' %}" class="btn btn-primary">Browse Plants</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
