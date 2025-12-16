@@ -38,7 +38,7 @@ class PlantModelTest(TestCase):
 
     def test_plant_str_method(self):
         """Test the string representation of a plant"""
-        self.assertEqual(str(self.plant), "Testus plantus")
+        self.assertEqual(str(self.plant), "Testus plantus (Test Plant)")
 
 
 class PlantViewTest(TestCase):
@@ -70,12 +70,12 @@ class PlantViewTest(TestCase):
 
     def test_plant_list_view(self):
         """Test that plant list view returns 200"""
-        response = self.client.get(reverse('plant_list'))
+        response = self.client.get(reverse('plants:plant_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Testus plantus")
 
     def test_plant_detail_view(self):
         """Test that plant detail view returns 200"""
-        response = self.client.get(reverse('plant_detail', args=[self.plant.scientific_name]))
+        response = self.client.get(reverse('plants:plant_detail', args=[self.plant.scientific_name]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Testus plantus")
