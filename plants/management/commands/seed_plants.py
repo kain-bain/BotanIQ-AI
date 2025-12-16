@@ -5,6 +5,7 @@ class Command(BaseCommand):
     help = 'Seed the database with sample medicinal plants'
 
     def handle(self, *args, **options):
+        self.stdout.write("Starting seed_plants command...")
         # African medicinal plants data - focusing on Kenya and other African regions
         plants_data = [
             # Kenya - Moringa (widespread)
@@ -550,16 +551,20 @@ class Command(BaseCommand):
         ]
 
         # Seed the database
+        self.stdout.write(f"Processing {len(plants_data)} plants...")
         created_count = 0
         for plant_data in plants_data:
-            plant, created = Plant.objects.get_or_create(
-                scientific_name=plant_data['scientific_name'],
-                defaults=plant_data
-            )
-            if created:
-                created_count += 1
-                self.stdout.write(f"Created plant: {plant.scientific_name}")
-            else:
-                self.stdout.write(f"Plant already exists: {plant.scientific_name}")
+            try:
+                plant, created = Plant.objects.get_or_create(
+                    scientific_name=plant_data['scientific_name'],
+                    defaults=plant_data
+                )
+                if created:
+                    created_count += 1
+                    self.stdout.write(f"Created: {plant.scientific_name}")
+                else:
+                    self.stdout.write(f"Exists: {plant.scientific_name}")
+            except Exception as e:
+                self.stdout.write(f"Error creating {plant_data['scientific_name']}: {e}")
 
         self.stdout.write(self.style.SUCCESS(f"Database seeded with {created_count} new plants!"))
