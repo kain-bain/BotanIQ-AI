@@ -1,1 +1,2 @@
-web: python manage.py migrate && python seed_plants.py && python manage.py collectstatic --noinput && gunicorn botaniq.wsgi:application --bind 0.0.0.0:$PORT --log-file -
+release: python seed_plants.py
+web: python manage.py migrate && python manage.py collectstatic --noinput && gunicorn botaniq.wsgi:application --bind 0.0.0.0:$PORT --log-file -
