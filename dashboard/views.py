@@ -2,14 +2,19 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count, Q
-from .models import UserCollection, SavedPlant, ResearchNote
+from .models import UserCollection, SavedPlant, ResearchNote, UserProfile
 from plants.models import Plant
+from .forms import UserProfileForm
 
 
 @login_required
 def dashboard(request):
-    """Main user dashboard"""
+    """Main user dashboard - redirects staff to admin dashboard"""
     user = request.user
+
+    # Redirect staff/admin users to admin dashboard
+    if user.is_staff:
+        return redirect('dashboard:admin_dashboard')
 
     # Get or create default collection
     default_collection, created = UserCollection.objects.get_or_create(
@@ -109,6 +114,28 @@ def toggle_favorite(request, plant_id):
     return redirect('dashboard:dashboard')
 
 
+@login_required
+def profile_settings(request):
+    """User profile and account settings"""
+    # Get or create user profile
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('dashboard:profile_settings')
+    else:
+        form = UserProfileForm(instance=profile)
+
+    context = {
+        'form': form,
+        'profile': profile,
+    }
+    return render(request, 'dashboard/profile_settings.html', context)
+
+
 # Admin Dashboard Views
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
@@ -117,21 +144,92 @@ from .forms import PlantForm
 @staff_member_required
 def admin_dashboard(request):
     """Admin dashboard for content management"""
-    # Statistics
+    from django.db.models import Count, Avg, Q
+    from datetime import timedelta
+    from django.utils import timezone
+
+    # Time-based filters
+    now = timezone.now()
+    last_30_days = now - timedelta(days=30)
+    last_7_days = now - timedelta(days=7)
+
+    # Core Statistics
     total_plants = Plant.objects.count()
     verified_plants = Plant.objects.filter(is_verified=True).count()
+    unverified_plants = total_plants - verified_plants
     total_users = User.objects.count()
     active_users = User.objects.filter(is_active=True).count()
+    staff_users = User.objects.filter(is_staff=True).count()
     total_saved_plants = SavedPlant.objects.count()
+    total_collections = UserCollection.objects.count()
+    total_research_notes = ResearchNote.objects.count()
+
+    # Activity Statistics (last 30 days)
+    new_users_30d = User.objects.filter(date_joined__gte=last_30_days).count()
+    new_plants_30d = Plant.objects.filter(created_at__gte=last_30_days).count()
+    saved_plants_30d = SavedPlant.objects.filter(date_saved__gte=last_30_days).count()
+
+    # Activity Statistics (last 7 days)
+    new_users_7d = User.objects.filter(date_joined__gte=last_7_days).count()
+    new_plants_7d = Plant.objects.filter(created_at__gte=last_7_days).count()
+
+    # Plant categories
+    plants_by_region = Plant.objects.values('regions').annotate(
+        count=Count('id')
+    ).exclude(regions__isnull=True).order_by('-count')[:5]
+
+    plants_by_system = Plant.objects.values('traditional_systems').annotate(
+        count=Count('id')
+    ).exclude(traditional_systems__isnull=True).order_by('-count')[:5]
+
+    # User engagement
+    users_with_collections = UserCollection.objects.values('user').distinct().count()
+    users_with_saved_plants = SavedPlant.objects.values('user').distinct().count()
+    avg_plants_per_user = SavedPlant.objects.count() / max(total_users, 1)
+
+    # System health
+    plants_without_description = Plant.objects.filter(
+        Q(description__isnull=True) | Q(description='')
+    ).count()
+    plants_without_uses = Plant.objects.filter(
+        Q(cultural_uses__isnull=True) | Q(cultural_uses__exact=[])
+    ).count()
 
     context = {
+        # Basic counts
         'total_plants': total_plants,
         'verified_plants': verified_plants,
+        'unverified_plants': unverified_plants,
         'total_users': total_users,
         'active_users': active_users,
+        'staff_users': staff_users,
         'total_saved_plants': total_saved_plants,
-        'recent_plants': Plant.objects.order_by('-created_at')[:5],
-        'recent_users': User.objects.order_by('-date_joined')[:5],
+        'total_collections': total_collections,
+        'total_research_notes': total_research_notes,
+
+        # Recent activity
+        'new_users_30d': new_users_30d,
+        'new_plants_30d': new_plants_30d,
+        'saved_plants_30d': saved_plants_30d,
+        'new_users_7d': new_users_7d,
+        'new_plants_7d': new_plants_7d,
+
+        # Categories
+        'plants_by_region': plants_by_region,
+        'plants_by_system': plants_by_system,
+
+        # Engagement
+        'users_with_collections': users_with_collections,
+        'users_with_saved_plants': users_with_saved_plants,
+        'avg_plants_per_user': round(avg_plants_per_user, 1),
+
+        # System health
+        'plants_without_description': plants_without_description,
+        'plants_without_uses': plants_without_uses,
+
+        # Recent items
+        'recent_plants': Plant.objects.order_by('-created_at')[:8],
+        'recent_users': User.objects.order_by('-date_joined')[:8],
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 

@@ -241,15 +241,32 @@
             <a href="{% url 'home' %}" class="logo">BotanIQ</a>
             <nav class="nav">
                 <a href="{% url 'plants:plant_list' %}">Plants</a>
-                {% if user.is_staff %}
-                <a href="{% url 'dashboard:admin_dashboard' %}">Admin<span class="admin-badge">Dashboard</span></a>
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'dashboard:admin_dashboard' %}">Admin Panel</a>
+                        <a href="{% url 'dashboard:admin_plants' %}">Manage Plants</a>
+                        <a href="{% url 'dashboard:admin_users' %}">Manage Users</a>
+                    {% else %}
+                        <a href="{% url 'dashboard:dashboard' %}">My Collections</a>
+                        <a href="{% url 'dashboard:profile_settings' %}">Settings</a>
+                    {% endif %}
                 {% endif %}
             </nav>
             <div class="user-nav">
                 {% if user.is_authenticated %}
-                    <span style="color: white; font-weight: 500;">Welcome, {{ user.username }}!</span>
-                    <a href="{% url 'dashboard:dashboard' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Dashboard</a>
-                    <a href="{% url 'logout' %}" class="btn" style="background: transparent; border: 1px solid white; color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Logout</a>
+                    <span style="color: white; font-weight: 500;">
+                        Welcome, {{ user.username }}
+                        {% if user.is_staff %}<span class="admin-badge">ADMIN</span>{% endif %}!
+                    </span>
+                    {% if user.is_staff %}
+                        <a href="{% url 'dashboard:admin_dashboard' %}" class="btn" style="background: var(--error); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Admin Dashboard</a>
+                    {% else %}
+                        <a href="{% url 'dashboard:dashboard' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">My Dashboard</a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn" style="background: transparent; border: 1px solid white; color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Logout</button>
+                    </form>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn" style="background: var(--accent-green); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Login</a>
                     <a href="{% url 'register' %}" class="btn" style="background: transparent; border: 1px solid white; color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">Sign Up</a>
