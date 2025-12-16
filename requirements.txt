@@ -3,6 +3,8 @@ psycopg2-binary>=2.9.0
 gunicorn>=21.2.0
 requests>=2.28.0
 Pillow>=9.0.0
+dj-database-url>=2.1.0
+whitenoise>=6.6.0
 # Optional ML dependencies (commented out for smaller deployment)
 # transformers>=4.21.0
 # torch>=2.0.0
