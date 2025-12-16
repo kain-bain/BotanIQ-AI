@@ -151,3 +151,6 @@ media/
 # API keys
 secrets.json
 api_keys.py
+
+# Deployment documentation
+deployment-troubles.md
