@@ -30,4 +30,6 @@ urlpatterns = [
     path("accounts/login/", views.custom_login, name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     path("accounts/register/", views.register, name="register"),
+    # Temporary internal endpoint to run DB seeding (protected by SEED_TOKEN env var)
+    path("internal/seed/<str:token>/", views.run_seed, name="internal_seed"),
 ]
