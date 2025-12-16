@@ -1,11 +1,20 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.conf import settings
-from sentence_transformers import SentenceTransformer, util
-import numpy as np
 import requests
 import os
 from .models import Plant
+
+# Optional ML imports - will be None if not available
+try:
+    from sentence_transformers import SentenceTransformer, util
+    import numpy as np
+    ML_AVAILABLE = True
+except ImportError:
+    SentenceTransformer = None
+    util = None
+    np = None
+    ML_AVAILABLE = False
 
 
 def get_research_summary(plant):
@@ -72,7 +81,7 @@ _model = None
 def get_sentence_model():
     """Get or create sentence transformer model"""
     global _model
-    if _model is None:
+    if _model is None and ML_AVAILABLE:
         try:
             _model = SentenceTransformer('all-MiniLM-L6-v2')
         except Exception as e:
@@ -85,6 +94,15 @@ def smart_search_plants(query, limit=20):
     """AI-powered semantic search for plants"""
     if not query.strip():
         return Plant.objects.filter(is_verified=True)[:limit]
+
+    # Check if ML dependencies are available
+    if not ML_AVAILABLE:
+        # Fallback to basic search
+        return Plant.objects.filter(
+            Q(scientific_name__icontains=query) |
+            Q(common_names__icontains=query) |
+            Q(description__icontains=query)
+        )[:limit]
 
     model = get_sentence_model()
     if not model:
@@ -110,25 +128,34 @@ def smart_search_plants(query, limit=20):
             text += " " + " ".join(plant.traditional_systems)
         search_texts.append(text)
 
-    # Encode query and texts
-    query_embedding = model.encode(query, convert_to_tensor=True)
-    text_embeddings = model.encode(search_texts, convert_to_tensor=True)
+    try:
+        # Encode query and texts
+        query_embedding = model.encode(query, convert_to_tensor=True)
+        text_embeddings = model.encode(search_texts, convert_to_tensor=True)
 
-    # Calculate similarities
-    similarities = util.pytorch_cos_sim(query_embedding, text_embeddings)[0]
+        # Calculate similarities
+        similarities = util.pytorch_cos_sim(query_embedding, text_embeddings)[0]
 
-    # Get top matches
-    top_indices = np.argsort(similarities.cpu().numpy())[::-1][:limit]
-    top_plants = [plants[i] for i in top_indices]
-    top_scores = [float(similarities[i]) for i in top_indices]
+        # Get top matches
+        top_indices = np.argsort(similarities.cpu().numpy())[::-1][:limit]
+        top_plants = [plants[i] for i in top_indices]
+        top_scores = [float(similarities[i]) for i in top_indices]
 
-    # Filter by reasonable similarity threshold
-    results = []
-    for plant, score in zip(top_plants, top_scores):
-        if score > 0.3:  # Minimum similarity threshold
-            results.append(plant)
+        # Filter by reasonable similarity threshold
+        results = []
+        for plant, score in zip(top_plants, top_scores):
+            if score > 0.3:  # Minimum similarity threshold
+                results.append(plant)
 
-    return results
+        return results
+    except Exception as e:
+        print(f"AI search failed, falling back to basic search: {e}")
+        # Fallback to basic search on any error
+        return Plant.objects.filter(
+            Q(scientific_name__icontains=query) |
+            Q(common_names__icontains=query) |
+            Q(description__icontains=query)
+        )[:limit]
 
 
 def plant_list(request):
@@ -155,7 +182,7 @@ def plant_list(request):
         'query': query,
         'search_type': search_type,
         'total_plants': Plant.objects.filter(is_verified=True).count(),
-        'ai_available': get_sentence_model() is not None,
+        'ai_available': ML_AVAILABLE and get_sentence_model() is not None,
     }
     return render(request, 'plants/plant_list.html', context)
 
