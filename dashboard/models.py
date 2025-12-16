@@ -3,6 +3,21 @@ from django.contrib.auth.models import User
 from plants.models import Plant
 
 
+class UserProfile(models.Model):
+    """Extended user profile with additional information"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=20, blank=True)
+    location = models.CharField(max_length=100, blank=True)
+    bio = models.TextField(blank=True, help_text="Brief description about yourself")
+    email_verified = models.BooleanField(default=False)
+    email_verification_token = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+
 class UserCollection(models.Model):
     """User's custom collections for organizing saved plants"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='collections')

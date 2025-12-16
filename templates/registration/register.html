@@ -38,6 +38,48 @@
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">
+                    <label for="{{ form.email.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                        Email Address
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                            {{ form.email.errors.0 }}
+                        </p>
+                    {% endif %}
+                    <small style="color: var(--text-medium); display: block; margin-top: 0.5rem;">
+                        We'll send you a verification link to confirm your email.
+                    </small>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="{{ form.phone_number.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                        Phone Number
+                    </label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                            {{ form.phone_number.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="{{ form.location.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
+                        Location
+                    </label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                        <p style="color: var(--error); font-size: 0.9rem; margin-top: 0.5rem;">
+                            {{ form.location.errors.0 }}
+                        </p>
+                    {% endif %}
+                    <small style="color: var(--text-medium); display: block; margin-top: 0.5rem;">
+                        City and country (e.g., Nairobi, Kenya)
+                    </small>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
                     <label for="{{ form.password1.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">
                         Password
                     </label>

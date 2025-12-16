@@ -32,9 +32,12 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+SECURE_SSL_REDIRECT = True if not DEBUG else False
 SECURE_HSTS_SECONDS = 3600 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+SESSION_COOKIE_SECURE = True if not DEBUG else False
+CSRF_COOKIE_SECURE = True if not DEBUG else False
 
 
 # Application definition

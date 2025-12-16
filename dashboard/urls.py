@@ -6,6 +6,7 @@ app_name = 'dashboard'
 urlpatterns = [
     # User Dashboard
     path('', views.dashboard, name='dashboard'),
+    path('settings/', views.profile_settings, name='profile_settings'),
     path('save/<int:plant_id>/', views.save_plant, name='save_plant'),
     path('remove/<int:plant_id>/', views.remove_plant, name='remove_plant'),
     path('collection/<int:collection_id>/', views.collection_detail, name='collection_detail'),

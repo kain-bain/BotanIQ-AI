@@ -1,5 +1,8 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from plants.models import Plant
+from .models import UserProfile
 
 
 class PlantForm(forms.ModelForm):
@@ -152,3 +155,63 @@ class PlantForm(forms.ModelForm):
         if data:
             return [region.strip() for region in data.split(',') if region.strip()]
         return []
+
+
+class CustomUserCreationForm(UserCreationForm):
+    """Extended user registration form with additional fields"""
+    email = forms.EmailField(required=True, help_text="Required. Enter a valid email address.")
+    phone_number = forms.CharField(
+        max_length=20,
+        required=True,
+        help_text="Required. Enter your phone number.",
+        widget=forms.TextInput(attrs={'placeholder': '+254 XXX XXX XXX'})
+    )
+    location = forms.CharField(
+        max_length=100,
+        required=True,
+        help_text="Required. Enter your location (city, country).",
+        widget=forms.TextInput(attrs={'placeholder': 'Nairobi, Kenya'})
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "phone_number", "location", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+            # Create user profile
+            UserProfile.objects.create(
+                user=user,
+                phone_number=self.cleaned_data["phone_number"],
+                location=self.cleaned_data["location"]
+            )
+        return user
+
+
+class UserProfileForm(forms.ModelForm):
+    """Form for editing user profile"""
+    email = forms.EmailField(required=True, help_text="Your email address")
+
+    class Meta:
+        model = UserProfile
+        fields = ['phone_number', 'location', 'bio']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Tell us about your interest in medicinal plants...'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.user:
+            self.fields['email'].initial = self.instance.user.email
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if commit:
+            # Update user email
+            profile.user.email = self.cleaned_data['email']
+            profile.user.save()
+            profile.save()
+        return profile
