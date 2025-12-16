@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+print("Starting seed_plants.py script")
 import os
 import django
 import sys
@@ -7,6 +8,7 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'botaniq.settings')
 django.setup()
+print("Django setup complete")
 
 from plants.models import Plant
 
