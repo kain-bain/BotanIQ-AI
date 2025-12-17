@@ -69,14 +69,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "botaniq.wsgi.application"
 
-# Database - automatically parse Railway DATABASE_URL
+# Database - automatically parse DATABASE_URL for Render
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True,
+            conn_health_checks=True,
         )
     }
 else:

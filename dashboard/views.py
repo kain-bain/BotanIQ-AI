@@ -5,7 +5,7 @@ from django.db.models import Count, Q
 from .models import UserCollection, SavedPlant, ResearchNote, UserProfile
 from plants.models import Plant
 from .forms import UserProfileForm
-
+from django.core.paginator import Paginator
 
 @login_required
 def dashboard(request):
