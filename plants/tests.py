@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from .models import Plant
 from .views import basic_plant_search
+from .views import basic_plant_search
 
 
 class PlantModelTest(TestCase):
