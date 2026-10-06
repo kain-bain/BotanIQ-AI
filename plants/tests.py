@@ -37,8 +37,22 @@ class PlantModelTest(TestCase):
         self.assertTrue(self.plant.is_verified)
 
     def test_plant_str_method(self):
-        """Test the string representation of a plant"""
+        """Test the string representation of a plant."""
         self.assertEqual(str(self.plant), "Testus plantus (Test Plant)")
+
+    def test_common_names_display(self):
+        """Test readable common-name formatting."""
+        self.assertEqual(
+            self.plant.get_common_names_display(),
+            "Test Plant"
+        )
+
+    def test_regions_display(self):
+        """Test readable region formatting."""
+        self.assertEqual(
+            self.plant.get_regions_display(),
+            "Test Region"
+        )
 
 
 class PlantViewTest(TestCase):
