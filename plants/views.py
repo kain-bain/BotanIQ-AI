@@ -90,6 +90,17 @@ def get_sentence_model():
     return _model
 
 
+def basic_plant_search(query, limit=20):
+    """Search verified plants using basic keyword matching."""
+    return Plant.objects.filter(
+        is_verified=True
+    ).filter(
+        Q(scientific_name__icontains=query) |
+        Q(common_names__icontains=query) |
+        Q(description__icontains=query)
+    )[:limit]
+
+
 def smart_search_plants(query, limit=20):
     """AI-powered semantic search for plants"""
     if not query.strip():
@@ -98,20 +109,12 @@ def smart_search_plants(query, limit=20):
     # Check if ML dependencies are available
     if not ML_AVAILABLE:
         # Fallback to basic search
-        return Plant.objects.filter(
-            Q(scientific_name__icontains=query) |
-            Q(common_names__icontains=query) |
-            Q(description__icontains=query)
-        )[:limit]
+        return basic_plant_search(query, limit)
 
     model = get_sentence_model()
     if not model:
         # Fallback to basic search
-        return Plant.objects.filter(
-            Q(scientific_name__icontains=query) |
-            Q(common_names__icontains=query) |
-            Q(description__icontains=query)
-        )[:limit]
+        return basic_plant_search(query, limit)
 
     # Get all verified plants
     plants = list(Plant.objects.filter(is_verified=True))
@@ -151,11 +154,7 @@ def smart_search_plants(query, limit=20):
     except Exception as e:
         print(f"AI search failed, falling back to basic search: {e}")
         # Fallback to basic search on any error
-        return Plant.objects.filter(
-            Q(scientific_name__icontains=query) |
-            Q(common_names__icontains=query) |
-            Q(description__icontains=query)
-        )[:limit]
+        return basic_plant_search(query, limit)
 
 
 def plant_list(request):
@@ -171,11 +170,7 @@ def plant_list(request):
             plants = smart_search_plants(query)
         else:
             # Basic keyword search
-            plants = plants.filter(
-                Q(scientific_name__icontains=query) |
-                Q(common_names__icontains=query) |
-                Q(description__icontains=query)
-            )
+            plants = basic_plant_search(query)
 
     context = {
         'plants': plants,
