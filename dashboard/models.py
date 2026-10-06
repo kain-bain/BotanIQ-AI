@@ -49,6 +49,11 @@ class SavedPlant(models.Model):
     def __str__(self):
         return f"{self.user.username} saved {self.plant.scientific_name}"
 
+    def toggle_favorite(self):
+        """Toggle the saved plant's favorite status."""
+        self.is_favorite = not self.is_favorite
+        self.save(update_fields=["is_favorite"])
+
 
 class ResearchNote(models.Model):
     """Detailed research notes for plants"""
