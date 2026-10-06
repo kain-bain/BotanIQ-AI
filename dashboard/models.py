@@ -35,7 +35,7 @@ class UserCollection(models.Model):
 
 
 class SavedPlant(models.Model):
-    """Plants saved by users for their research"""
+    """A user-owned reference to a plant in their research library."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_plants')
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='saved_by')
     collection = models.ForeignKey(UserCollection, on_delete=models.CASCADE, related_name='plants')
@@ -49,9 +49,14 @@ class SavedPlant(models.Model):
     def __str__(self):
         return f"{self.user.username} saved {self.plant.scientific_name}"
 
+    def toggle_favorite(self):
+        """Toggle the saved plant's favorite status."""
+        self.is_favorite = not self.is_favorite
+        self.save(update_fields=["is_favorite"])
+
 
 class ResearchNote(models.Model):
-    """Detailed research notes for plants"""
+    """User-authored research notes attached to saved plants."""
     saved_plant = models.ForeignKey(SavedPlant, on_delete=models.CASCADE, related_name='research_notes')
     title = models.CharField(max_length=200)
     content = models.TextField()

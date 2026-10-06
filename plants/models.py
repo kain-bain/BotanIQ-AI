@@ -1,8 +1,9 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Plant(models.Model):
-    """Medicinal plant database model"""
+    """Core medicinal plant record used by the BotanIQ knowledge base."""
 
     # Botanical Information
     common_names = models.JSONField(help_text="List of common names")
@@ -57,5 +58,26 @@ class Plant(models.Model):
         return f"{self.scientific_name} ({', '.join(self.common_names[:2])})"
 
     def get_primary_common_name(self):
-        """Get the first common name for display"""
+        """Get the first common name for display."""
         return self.common_names[0] if self.common_names else self.scientific_name
+
+    def get_common_names_display(self):
+        """Return common names as a readable comma-separated string."""
+        return ", ".join(self.common_names or [])
+
+    def get_regions_display(self):
+        """Return regions as a readable comma-separated string."""
+        return ", ".join(self.regions or [])
+
+    def get_absolute_url(self):
+        """Return the canonical URL for this plant's detail page."""
+        return reverse('plants:plant_detail', kwargs={'scientific_name': self.scientific_name})
+
+    @property
+    def is_safe_for_pregnancy(self):
+        """Return False if the contraindications text mentions pregnancy-related warnings."""
+        if not self.contraindications:
+            return True
+        pregnancy_keywords = ('pregnan', 'nursing', 'breastfeed', 'lactati', 'trimester', 'fetal', 'fetus', 'uterine', 'oxytocic')
+        lower = self.contraindications.lower()
+        return not any(keyword in lower for keyword in pregnancy_keywords)

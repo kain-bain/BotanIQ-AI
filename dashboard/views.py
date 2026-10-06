@@ -43,6 +43,11 @@ def dashboard(request):
     total_collections = collections.count()
     total_notes = ResearchNote.objects.filter(saved_plant__user=user).count()
 
+    # Recent research notes
+    recent_notes = ResearchNote.objects.filter(
+        saved_plant__user=user
+    ).select_related('saved_plant__plant').order_by('-updated_at')[:5]
+
     context = {
         'collections': collections,
         'recent_plants': recent_plants,
@@ -50,6 +55,7 @@ def dashboard(request):
         'total_saved': total_saved,
         'total_collections': total_collections,
         'total_notes': total_notes,
+        'recent_notes': recent_notes,
     }
     return render(request, 'dashboard/dashboard.html', context)
 

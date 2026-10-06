@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error - BotanIQ{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="text-align: center; padding: 4rem 2rem;">
+    <div style="font-size: 6rem; margin-bottom: 1rem;">🍂</div>
+    <h1 style="font-family: var(--font-heading); color: var(--primary-green); margin-bottom: 1rem;">
+        Something Wilted
+    </h1>
+    <p style="color: var(--text-medium); font-size: 1.2rem; margin-bottom: 0.75rem; max-width: 540px; margin-left: auto; margin-right: auto;">
+        An unexpected server error occurred. Our team has been notified and is working to fix it.
+    </p>
+    <p style="color: var(--text-light); font-size: 1rem; margin-bottom: 2rem;">
+        Error 500 &mdash; Internal Server Error
+    </p>
+    <div>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-right: 1rem;">Return Home</a>
+        <a href="{% url 'plants:plant_list' %}" class="btn btn-secondary">Browse Plants</a>
+    </div>
+</div>
+{% endblock %}

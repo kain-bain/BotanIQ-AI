@@ -97,7 +97,7 @@ class PlantForm(forms.ModelForm):
         """Convert comma-separated string to list"""
         data = self.cleaned_data['common_names']
         if data:
-            return [name.strip() for name in data.split(',') if name.strip()]
+            return [name.strip() for name in data.split(",") if name.strip()]
         return []
 
     def clean_traditional_systems(self):

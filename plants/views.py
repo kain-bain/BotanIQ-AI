@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.conf import settings
+from django.core.paginator import Paginator
 import requests
 import os
 from .models import Plant
@@ -90,6 +91,17 @@ def get_sentence_model():
     return _model
 
 
+def basic_plant_search(query, limit=20):
+    """Search verified plants using basic keyword matching."""
+    return Plant.objects.filter(
+        is_verified=True
+    ).filter(
+        Q(scientific_name__icontains=query) |
+        Q(common_names__icontains=query) |
+        Q(description__icontains=query)
+    )[:limit]
+
+
 def smart_search_plants(query, limit=20):
     """AI-powered semantic search for plants"""
     if not query.strip():
@@ -98,20 +110,12 @@ def smart_search_plants(query, limit=20):
     # Check if ML dependencies are available
     if not ML_AVAILABLE:
         # Fallback to basic search
-        return Plant.objects.filter(
-            Q(scientific_name__icontains=query) |
-            Q(common_names__icontains=query) |
-            Q(description__icontains=query)
-        )[:limit]
+        return basic_plant_search(query, limit)
 
     model = get_sentence_model()
     if not model:
         # Fallback to basic search
-        return Plant.objects.filter(
-            Q(scientific_name__icontains=query) |
-            Q(common_names__icontains=query) |
-            Q(description__icontains=query)
-        )[:limit]
+        return basic_plant_search(query, limit)
 
     # Get all verified plants
     plants = list(Plant.objects.filter(is_verified=True))
@@ -151,11 +155,7 @@ def smart_search_plants(query, limit=20):
     except Exception as e:
         print(f"AI search failed, falling back to basic search: {e}")
         # Fallback to basic search on any error
-        return Plant.objects.filter(
-            Q(scientific_name__icontains=query) |
-            Q(common_names__icontains=query) |
-            Q(description__icontains=query)
-        )[:limit]
+        return basic_plant_search(query, limit)
 
 
 def plant_list(request):
@@ -171,16 +171,24 @@ def plant_list(request):
             plants = smart_search_plants(query)
         else:
             # Basic keyword search
-            plants = plants.filter(
-                Q(scientific_name__icontains=query) |
-                Q(common_names__icontains=query) |
-                Q(description__icontains=query)
-            )
+            plants = basic_plant_search(query)
+
+    # Materialise queryset once so we can count results efficiently
+    plants_list = list(plants) if not isinstance(plants, list) else plants
+    result_count = len(plants_list)
+
+    # Paginate results – 12 plants per page
+    paginator = Paginator(plants_list, 12)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        'plants': plants,
+        'plants': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': paginator.num_pages > 1,
         'query': query,
         'search_type': search_type,
+        'result_count': result_count,
         'total_plants': Plant.objects.filter(is_verified=True).count(),
         'ai_available': ML_AVAILABLE and get_sentence_model() is not None,
     }
