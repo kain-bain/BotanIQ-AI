@@ -172,10 +172,15 @@ def plant_list(request):
             # Basic keyword search
             plants = basic_plant_search(query)
 
+    # Materialise queryset once so we can count results efficiently
+    plants_list = list(plants) if not isinstance(plants, list) else plants
+    result_count = len(plants_list)
+
     context = {
-        'plants': plants,
+        'plants': plants_list,
         'query': query,
         'search_type': search_type,
+        'result_count': result_count,
         'total_plants': Plant.objects.filter(is_verified=True).count(),
         'ai_available': ML_AVAILABLE and get_sentence_model() is not None,
     }
