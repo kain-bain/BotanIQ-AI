@@ -57,5 +57,13 @@ class Plant(models.Model):
         return f"{self.scientific_name} ({', '.join(self.common_names[:2])})"
 
     def get_primary_common_name(self):
-        """Get the first common name for display"""
+        """Get the first common name for display."""
         return self.common_names[0] if self.common_names else self.scientific_name
+
+    def get_common_names_display(self):
+        """Return common names as a readable comma-separated string."""
+        return ", ".join(self.common_names or [])
+
+    def get_regions_display(self):
+        """Return regions as a readable comma-separated string."""
+        return ", ".join(self.regions or [])
