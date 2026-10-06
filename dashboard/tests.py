@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from plants.models import Plant
 from .models import UserCollection, SavedPlant
+from plants.models import Plant
+from .models import UserCollection, SavedPlant
 
 
 class DashboardTest(TestCase):
