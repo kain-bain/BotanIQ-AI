@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from .models import Plant
+from .views import basic_plant_search
 
 
 class PlantModelTest(TestCase):
@@ -93,3 +94,36 @@ class PlantViewTest(TestCase):
         response = self.client.get(reverse('plants:plant_detail', args=[self.plant.scientific_name]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Testus plantus")
+
+
+class PlantSearchTest(TestCase):
+    def setUp(self):
+        self.plant = Plant.objects.create(
+            common_names=["Mwarubaini"],
+            scientific_name="Azadirachta indica",
+            plant_family="Meliaceae",
+            description="A medicinal tree used traditionally.",
+            regions=["Kenya"],
+            traditional_systems=[],
+            cultural_uses=[],
+            parts_used=[],
+            preparations=[],
+            active_compounds=[],
+            research_studies=[],
+            pharmacological_actions=[],
+            is_verified=True,
+        )
+
+    def test_search_by_scientific_name(self):
+        results = basic_plant_search("Azadirachta")
+        self.assertEqual(results.count(), 1)
+
+    def test_search_by_common_name(self):
+        results = basic_plant_search("Mwarubaini")
+        self.assertEqual(results.count(), 1)
+
+    def test_unverified_plants_are_excluded(self):
+        self.plant.is_verified = False
+        self.plant.save()
+        results = basic_plant_search("Mwarubaini")
+        self.assertEqual(results.count(), 0)
