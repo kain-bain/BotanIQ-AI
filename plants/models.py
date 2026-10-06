@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Plant(models.Model):
-    """Medicinal plant database model"""
+    """Core medicinal plant record used by the BotanIQ knowledge base."""
 
     # Botanical Information
     common_names = models.JSONField(help_text="List of common names")
