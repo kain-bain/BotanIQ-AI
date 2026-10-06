@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Plant(models.Model):
@@ -67,3 +68,7 @@ class Plant(models.Model):
     def get_regions_display(self):
         """Return regions as a readable comma-separated string."""
         return ", ".join(self.regions or [])
+
+    def get_absolute_url(self):
+        """Return the canonical URL for this plant's detail page."""
+        return reverse('plants:plant_detail', kwargs={'scientific_name': self.scientific_name})
