@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.conf import settings
+from django.core.paginator import Paginator
 import requests
 import os
 from .models import Plant
@@ -176,8 +177,15 @@ def plant_list(request):
     plants_list = list(plants) if not isinstance(plants, list) else plants
     result_count = len(plants_list)
 
+    # Paginate results – 12 plants per page
+    paginator = Paginator(plants_list, 12)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'plants': plants_list,
+        'plants': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': paginator.num_pages > 1,
         'query': query,
         'search_type': search_type,
         'result_count': result_count,
