@@ -72,3 +72,12 @@ class Plant(models.Model):
     def get_absolute_url(self):
         """Return the canonical URL for this plant's detail page."""
         return reverse('plants:plant_detail', kwargs={'scientific_name': self.scientific_name})
+
+    @property
+    def is_safe_for_pregnancy(self):
+        """Return False if the contraindications text mentions pregnancy-related warnings."""
+        if not self.contraindications:
+            return True
+        pregnancy_keywords = ('pregnan', 'nursing', 'breastfeed', 'lactati', 'trimester', 'fetal', 'fetus', 'uterine', 'oxytocic')
+        lower = self.contraindications.lower()
+        return not any(keyword in lower for keyword in pregnancy_keywords)
