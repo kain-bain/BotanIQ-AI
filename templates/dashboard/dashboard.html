@@ -117,9 +117,12 @@
                         <a href="{% url 'plants:plant_detail' saved_plant.plant.scientific_name %}" class="btn btn-primary" style="flex: 1; font-size: 0.9rem;">
                             View
                         </a>
-                        <a href="{% url 'dashboard:toggle_favorite' saved_plant.plant.id %}" class="btn btn-secondary" style="font-size: 0.9rem;">
-                            {% if saved_plant.is_favorite %}⭐{% else %}☆{% endif %}
-                        </a>
+                        <form method="post" action="{% url 'dashboard:toggle_favorite' saved_plant.plant.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary" style="font-size: 0.9rem;">
+                                {% if saved_plant.is_favorite %}⭐{% else %}☆{% endif %}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

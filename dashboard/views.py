@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db.models import Count, Q
 from .models import UserCollection, SavedPlant, ResearchNote, UserProfile
@@ -88,6 +89,7 @@ def save_plant(request, plant_id):
 
 
 @login_required
+@require_POST
 def remove_plant(request, plant_id):
     """Remove a saved plant"""
     plant = get_object_or_404(Plant, id=plant_id)
@@ -112,6 +114,7 @@ def collection_detail(request, collection_id):
 
 
 @login_required
+@require_POST
 def toggle_favorite(request, plant_id):
     """Toggle favorite status of a saved plant"""
     saved_plant = get_object_or_404(SavedPlant, user=request.user, plant_id=plant_id)
