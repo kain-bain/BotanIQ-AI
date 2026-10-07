@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.conf import settings
+from django.core.cache import cache
 from django.core.paginator import Paginator
 import requests
 from .models import Plant
@@ -198,10 +199,16 @@ def plant_detail(request, scientific_name):
     """Display detailed information about a specific plant"""
     plant = get_object_or_404(Plant, scientific_name=scientific_name, is_verified=True)
 
-    # Generate AI research summary (cached to avoid repeated API calls)
+    # Generate AI research summary, cached per plant for 24 hours to avoid
+    # redundant Mistral API calls on repeated page loads.
     research_summary = None
     if settings.MISTRAL_API_KEY:
-        research_summary = get_research_summary(plant)
+        cache_key = f"mistral_summary_{plant.pk}"
+        research_summary = cache.get(cache_key)
+        if research_summary is None:
+            research_summary = get_research_summary(plant)
+            if research_summary:
+                cache.set(cache_key, research_summary, timeout=60 * 60 * 24)  # 24 hours
 
     context = {
         'plant': plant,
