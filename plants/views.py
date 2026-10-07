@@ -3,7 +3,6 @@ from django.db.models import Q
 from django.conf import settings
 from django.core.paginator import Paginator
 import requests
-import os
 from .models import Plant
 
 # Optional ML imports - will be None if not available
@@ -20,7 +19,7 @@ except ImportError:
 
 def get_research_summary(plant):
     """Generate AI-powered research summary using Mistral AI"""
-    api_key = os.environ.get('MISTRAL_API_KEY')
+    api_key = settings.MISTRAL_API_KEY
     if not api_key:
         return None
 
@@ -201,12 +200,12 @@ def plant_detail(request, scientific_name):
 
     # Generate AI research summary (cached to avoid repeated API calls)
     research_summary = None
-    if os.environ.get('MISTRAL_API_KEY'):
+    if settings.MISTRAL_API_KEY:
         research_summary = get_research_summary(plant)
 
     context = {
         'plant': plant,
         'research_summary': research_summary,
-        'ai_available': bool(os.environ.get('MISTRAL_API_KEY')),
+        'ai_available': bool(settings.MISTRAL_API_KEY),
     }
     return render(request, 'plants/plant_detail.html', context)

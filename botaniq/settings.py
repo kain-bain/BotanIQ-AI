@@ -121,3 +121,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Authentication redirects
 LOGIN_REDIRECT_URL = 'dashboard:dashboard'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Third-party API keys
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY', '')
