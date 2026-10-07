@@ -38,9 +38,9 @@ BotanIQ is a comprehensive educational platform for learning about medicinal pla
 
 2. **Create virtual environment**
    ```bash
-   python -m venv venv
-   venv\Scripts\activate  # Windows
-   # source venv/bin/activate  # macOS/Linux
+   python -m venv .venv
+   source .venv/bin/activate  # macOS/Linux
+   # .venv\Scripts\activate  # Windows
    ```
 
 3. **Install dependencies**
