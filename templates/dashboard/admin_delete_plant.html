@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Plant - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="max-width: 600px; margin: 4rem auto;">
+    <div class="card">
+        <div class="card-content" style="text-align: center; padding: 3rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+            <h1 style="font-family: var(--font-heading); color: var(--error, #dc3545); margin-bottom: 1rem;">
+                Delete Plant
+            </h1>
+            <p style="color: var(--text-medium); margin-bottom: 0.5rem;">
+                You are about to permanently delete:
+            </p>
+            <p style="font-size: 1.2rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">
+                {{ plant.get_primary_common_name }}
+            </p>
+            <p style="color: var(--text-medium); font-style: italic; margin-bottom: 2rem;">
+                {{ plant.scientific_name }}
+            </p>
+            <p style="color: var(--text-medium); margin-bottom: 2rem;">
+                This action cannot be undone. All saved references to this plant by users will also be removed.
+            </p>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn" style="background: var(--error, #dc3545); color: white; border: none;">
+                        🗑️ Yes, delete permanently
+                    </button>
+                </form>
+                <a href="{% url 'dashboard:admin_plants' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -276,6 +276,18 @@ def admin_edit_plant(request, plant_id):
     return render(request, 'dashboard/admin_edit_plant.html', {'form': form, 'plant': plant})
 
 @staff_member_required
+def admin_delete_plant(request, plant_id):
+    """Delete a plant via admin dashboard (POST only)"""
+    plant = get_object_or_404(Plant, id=plant_id)
+    if request.method == 'POST':
+        name = plant.get_primary_common_name()
+        plant.delete()
+        messages.success(request, f'Plant "{name}" deleted successfully.')
+        return redirect('dashboard:admin_plants')
+    # GET shows a confirmation page
+    return render(request, 'dashboard/admin_delete_plant.html', {'plant': plant})
+
+@staff_member_required
 def admin_users(request):
     """Manage users in admin dashboard"""
     users = User.objects.all().order_by('-date_joined')
