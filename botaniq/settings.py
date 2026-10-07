@@ -4,6 +4,7 @@ Django settings for botaniq project - Railway-ready configuration.
 
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 import dj_database_url  # Ensure this is in requirements.txt
 
 # Build paths
@@ -13,6 +14,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'replace-this-with-env-secret-key')
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
+
+_DEFAULT_SECRET_KEY = 'replace-this-with-env-secret-key'
+if not DEBUG and SECRET_KEY == _DEFAULT_SECRET_KEY:
+    raise ImproperlyConfigured(
+        "SECRET_KEY must be set to a unique, unpredictable value in production. "
+        "Set the SECRET_KEY environment variable."
+    )
 
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True
